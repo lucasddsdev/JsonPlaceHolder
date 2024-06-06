@@ -14,6 +14,7 @@ import com.example.jsonplaceholder.services.RetrofitHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.create
@@ -39,6 +40,7 @@ class MainActivity : AppCompatActivity() {
 
             CoroutineScope(Dispatchers.IO).launch {
                 recuperarPostagens()
+                recuperarMensagem()
             }
         }
 
@@ -57,7 +59,7 @@ class MainActivity : AppCompatActivity() {
 
         }catch (e: Exception){
             e.printStackTrace()
-            Log.i("info_jsonplace", "erro ao recuperar postagem")
+            Log.i("info_jsonplace", "erro ao recuperar mensagem")
         }
 
 
@@ -65,14 +67,21 @@ class MainActivity : AppCompatActivity() {
             if (retorno.isSuccessful){
                 val listaDeMensagens = retorno.body()
 
+                var  resultado = ""
 
-               listaDeMensagens?.forEach{ postagem ->
-                    val id = postagem.id
-                    val msg = postagem.name
-                    Log.i("info_jsonplace_mensagem", "$id - $msg")
+               listaDeMensagens?.forEach{ mensagem ->
+                    val id = mensagem.id
+                    val email = mensagem.email
+                    val comentarioResultado = "$id - $email \n"
+                    resultado += comentarioResultado
+
+                    Log.i("info_jsonplace_mensagem", "$email")
                }
 
 
+                withContext(Dispatchers.Main){
+                    binding.textTexto.setText(resultado)
+                }
 
             }
         }
